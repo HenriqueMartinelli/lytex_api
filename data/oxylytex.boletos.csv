@@ -1,0 +1,24 @@
+_id,cpf,matricula,msg,valorServico,quantParcelas,decimoTerceiro,linkCobranca,nome
+665f556d8f9afc1fcad4312c,145.119.165-00,11104848,name 'response' is not defined,,,,,
+665f556f8f9afc1fcad4312e,060.566.605-91,11046123,name 'response' is not defined,,,,,
+665f55718f9afc1fcad4312f,661.408.977-34,11157702,name 'response' is not defined,,,,,
+665f56f6cdb79752f6f6b660,145.119.165-00,11104848,,"455,83",12,false,https://checkout-pay.lytex.com.br/fatura/665e785b36065d99cfb62c81,
+665f56f6cdb79752f6f6b661,292.482.135-53,11071241,,"227,92",12,false,https://checkout-pay.lytex.com.br/fatura/665e791f36065d99cfb62d4c,
+665f56f6cdb79752f6f6b662,024.283.855-34,11053955,,"227,92",12,false,https://checkout-pay.lytex.com.br/fatura/665e79fb36065d99cfb62e43,
+665f56f6cdb79752f6f6b663,052.868.675-53,11066918,,"455,83",12,false,,
+665f56f6cdb79752f6f6b664,431.813.765-15,11110638,,"455,83",12,false,,
+665f56f6cdb79752f6f6b665,496.116.745-20,11105788,,"377,05",12,false,,
+665f56f6cdb79752f6f6b666,007.099.215-00,11251590,,"455,83",12,false,,
+665f56f6cdb79752f6f6b667,275.227.685-00,11038326,,"455,83",12,false,,
+665f56f6cdb79752f6f6b668,062.645.305-49,11078656,,"455,83",12,false,,
+665f56f6cdb79752f6f6b669,044.808.055-91,11079811,,"227,92",12,false,,
+665f56f6cdb79752f6f6b66a,172.266.515-72,11202548,,"455,83",12,false,,
+665f56f6cdb79752f6f6b66b,529.990.255-72,11045736,,"455,83",12,false,,
+665f56f6cdb79752f6f6b66c,145.478.485-72,11105119,,"455,83",12,false,,
+665f56f6cdb79752f6f6b66d,026.866.195-20,11045559,,"455,83",12,false,,
+665f56f6cdb79752f6f6b66e,091.074.285-53,11076445,,"455,83",12,false,,
+665f56f6cdb79752f6f6b66f,570.628.895-04,11019330,,"272,82",12,false,,
+665f56f6cdb79752f6f6b670,024.913.205-25,11100636,,"692,77",12,false,,
+665f56f6cdb79752f6f6b671,551.135.835-53,11211742,,"227,92",12,false,https://checkout-pay.lytex.com.br/fatura/665f295097df8fedeb52f4d9,"_tuplegetter(4, 'Alias for field number 4')"
+665f56f6cdb79752f6f6b672,060.566.605-91,11046123,,"194,83",12,false,https://checkout-pay.lytex.com.br/fatura/665f2a0497df8fedeb52f70a,"_tuplegetter(4, 'Alias for field number 4')"
+665f56f6cdb79752f6f6b673,661.408.977-34,11157702,,"381,33",12,false,https://checkout-pay.lytex.com.br/fatura/665f2add97df8fedeb52fabd,ELEILDE FARIAS DE FREITAS

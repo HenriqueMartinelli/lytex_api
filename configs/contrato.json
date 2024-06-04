@@ -1,0 +1,57 @@
+            
+            
+{
+    "client": {
+        "name": "",
+        "treatmenPronoun": "",
+        "type": "",
+        "cpfCnpj": "",
+        "cellphone": "",
+        "createdAt": "",
+        "email": ""
+    },
+        "items": [
+            {
+                "_productId": "null",
+                "name": "HONORÁRIOS CONTRATUAIS PISO NACIONAL - FILIADO AFPEB",
+                "quantity": 1,
+                "value": ""
+            }
+        ],
+        "recurrence": {
+            "type": "monthly",
+            "day": 1,
+            "nextAt": "2024-05-29T03:00:00.000Z",
+            "dueDateDays": 5
+
+        },
+        "duration": {
+            "unit": "months",
+            "value": "PARCELAS"
+        },
+        "paymentMethods": {
+            "pix": {
+                "enable": true
+            },
+            "boleto": {
+                "enable": true
+            },
+            "creditCard": {
+                "enable": false
+              }
+        },
+        "mulctAndInterest": {
+            "enable": true,
+            "mulct": {
+                "type": "percentage",
+                "value": 2
+            },
+            "interest": {
+                "type": "percentage",
+                "value": 0.033
+            }
+        },
+        "_billingRuleId": "665530af71ba8f425553811c",
+        "overduePaymentDays": "100",
+        "observation": ""
+    }

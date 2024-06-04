@@ -1,134 +1,99 @@
 import json
 import pandas as pd
+from datetime import datetime
 
-from datetime import datetime, timedelta
+from auth.lytexAuth import LyTexAuth
+from configs.mongodb import ClienteService
+from modifiers.criar_contrato import ContratoController
+from types.contract_types import *
 
-from lytexAuth import LyTexAuth
-from tipos import row_to_cliente
-from criar_contrato import ContratoController
-from produto import *
+class ClienteProcessor:
+    def __init__(self, caminho_arquivo):
+        self.caminho_arquivo = caminho_arquivo
+        self.bearer_token = self.autenticar_lytex()
+        self.mongodb = ClienteService()
 
-    
-def autenticar_lytex():
-    auth = LyTexAuth()
-    new_config = auth.obtain_token()
-    auth.update_config(new_config)
-    return new_config['accessToken']
+    def autenticar_lytex(self):
+        auth = LyTexAuth()
+        new_config = auth.obtain_token()
+        auth.update_config(new_config)
+        return new_config['accessToken']
 
-def ler_dados_clientes(caminho_arquivo):
-    df = pd.read_csv(caminho_arquivo, encoding='utf-16', delimiter=',')
-    dados = df.to_dict('records')
-    return dados
+    def ler_dados_clientes(self):
+        df = pd.read_csv(self.caminho_arquivo, encoding='utf-8', delimiter=',')
+        dados = df.to_dict('records')
+        return dados
 
+    def processar_cliente(self, cliente):
+        contrato_controller = ContratoController(self.bearer_token)
+        id = "id não encontrado"
 
-def processar_cliente(cliente, bearer_token):
-    contrato_controler = ContratoController(bearer_token)
-
-    if cliente.quant_parcelas > 48:
-        return {
-        "error": False,
-        "numeroParcela": cliente.quant_parcelas,
-        "msg": "Parcelas não podem ser superior a 48"
-        }
-    try:
-        pessoa_json = contrato_controler.pegar_id_pessoa(cliente.cpf)
-        cliente_api= clienteAPi(**pessoa_json)
-        resultado = contrato_controler.criar_contrato(cliente_api, cliente)
-        print(resultado)
-        # self.salvar_sucesso_csv(cliente)
-
-    except Exception as erro:
-        resultado = {
-            "cpf": cliente.cpf,
-            "matricula": cliente.matricula,
-            "msg": erro.args[0]
-        }
-    print(resultado)
-    return resultado
-
-def verificar_token(response, contrato_controler, payload):
-    if response.get("message"):
-        if response.get("message") == "Token expirado":
-            bearer_token = autenticar_lytex()
-            contrato_controler = ContratoController(bearer_token)
-            contrato_controler.create_client(payload)
-    return contrato_controler
-
-
-def _serializar_dados_(dados):
-    # Converter objetos datetime em strings
-    for chave, valor in dados.items():
-        if isinstance(valor, datetime):
-            dados[chave] = valor.strftime("%Y-%m-%d %H:%M:%S")
-        elif isinstance(valor, ValueError):
-            dados[chave] = str(valor)
-    return dados
-
-def objeto_nao_serializavel(obj):
-    if isinstance(obj, (datetime, Exception)):
-        return str(obj)
-    raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
-
-
-def _salvar_json_log_(lista_dados, nome_arquivo=None):
-    try:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        nome_arquivo = f"resultados_{timestamp}.json"
-
-        # Serializar cada elemento da lista
-        lista_serializada = [_serializar_dados_(dado) for dado in lista_dados]
-
-        with open(nome_arquivo, "w") as arquivo:
-            json.dump(lista_serializada, arquivo, indent=4, default=objeto_nao_serializavel)
-
-        print(f"Arquivo JSON salvo com sucesso: {nome_arquivo}")
-    except Exception as e:
-        print(f"Erro ao salvar o log: {str(e)}")
-
-
-def verificar_contrato_criados(cliente):
-    try:
-        df = pd.read_csv("sucesso_criados.csv")
-        if cliente.cpf in df['cpf'].values:
+        if cliente.quantParcelas > 48:
             return {
-            "cpf": cliente.cpf,
-            "matricula": cliente.matricula,
-            "msg": "Cpf Já existe na planilha sucesso_criados.csv"
-        }
-        return False
-    except FileNotFoundError:
-        return False
+                "error": True,
+                "numeroParcela": cliente.quantParcelas,
+                "msg": "Parcelas não podem ser superiores a 48"
+            }
+
+        try:
+            pessoa_json = contrato_controller.pegar_id_pessoa(cliente.cpf)
+            contrato_controller = self.verificar_token(pessoa_json, contrato_controller, cliente)
+            cliente_api = clienteAPi(**pessoa_json)
+
+            resultado = contrato_controller.criar_contrato(cliente_api, cliente)
+            if resultado.get("lastInvoice"):
+                id = resultado.get("lastInvoice").get("_invoiceId")
+
+            contrato_controller = self.verificar_token(resultado, contrato_controller, cliente)
+            self.mongodb.salvar_sucesso_mongo(cliente, id, cliente_api)
+            return resultado
+
+        except Exception as erro:
+            self.mongodb.salvar_sucesso_mongo(cliente, msg=str(erro))
+            return {
+                "cpf": cliente.cpf,
+                "matricula": cliente.matricula,
+                "msg": str(erro)
+            }
+
+    def verificar_token(self, response, contrato_controller, cliente):
+        if response.get("message"):
+            if response.get("message") == "Token expirado":
+                self.bearer_token = self.autenticar_lytex()
+                return ContratoController(self.bearer_token)
+        return contrato_controller
 
 
-def main():
-    dados = [{'cpf': '00910849544',
-        'matricula': 'TESTE HENRIQUE',
-        'valor_servico': int('10000'),
-        'quant_parcelas': int('2'),
-        'decimo_terceiro': False  # Adicionei essa chave, assumindo False como padrão
-    }]
-    bearer_token = autenticar_lytex()
+    def gerar_nome_arquivo(self):
+        timestamp = datetime.now().strftime("%Y_%m_%d_%H-%M-%S")
+        return f"outputs/resultados_{timestamp}.json"
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    nome_arquivo = f"resultados_{timestamp}.json"
-    with open(nome_arquivo, "w") as file:
-        lista_dados = []
-        for linha in dados:
-            
-            cliente = Cliente(**linha)
-            event = verificar_contrato_criados(cliente.cpf)
-            if event:
-                lista_dados.append(event)
-                continue
-            resultado = processar_cliente(cliente, bearer_token)
-            lista_dados.append(resultado)
-            
-            json.dump(lista_dados, file)
-            file.write('\n')    
-    # Salvar a lista de dicionários com timestamp
+    def processar_dados(self):
+        dados = self.ler_dados_clientes()
+        nome_arquivo = self.gerar_nome_arquivo()
+        resultados = []
+        with open(nome_arquivo, "w") as file:
+            for linha in dados:
+                cliente = Cliente(**linha)
+                event = self.mongodb.verificar_contrato_criados(cliente)
+                if event:
+                    json.dump(event, file)
+                    file.write('\n')
+                else:
+                    resultado = self.processar_cliente(cliente)
+                    json.dump(resultado, file)
+                    file.write('\n')
+        return resultados
+
+    def escrever_resultados(self, nome_arquivo, resultados):
+        with open(nome_arquivo, "w") as file:
+            for resultado in resultados:
+                json.dump(resultado, file)
+                file.write('\n')
+
+    def main(self):
+        self.processar_dados()
 
 if __name__ == "__main__":
-    main()
-
-
-
+    processor = ClienteProcessor("clientesCobranca.csv")
+    processor.main()

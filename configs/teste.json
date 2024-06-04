@@ -1,0 +1,67 @@
+{
+    "client": {
+        "name": "ANTONIO JORGE FALCAO RIOS",
+        "treatmenPronoun": "you",
+        "type": "pf",
+        "cpfCnpj": "00910849544",
+        "cellphone": "71999576137",
+        "createdAt": "2024-05-28T01:45:38.377Z",
+        "email": "ajorgefalcao@gmail.com"
+    },
+    "items": [
+        {
+            "_productId": null,
+            "name": "HONOR\u00c1RIOS CONTRATUAIS PISO NACIONAL - FILIADO AFPEB",
+            "quantity": 1,
+            "value": 10000
+        }
+    ],
+    "recurrence": {
+        "type": "monthly",
+        "day": 1,
+        "nextAt": "2024-05-29T00:50:17.138Z",
+        "dueDateDays": 5
+    },
+    "dueDateDays": 5,
+    "duration": {
+        "unit": "months",
+        "value": 2
+    },
+    "paymentMethods": {
+        "pix": {
+            "enable": true
+        },
+        "boleto": {
+            "enable": true
+        },
+        "creditCard": {
+            "enable": false,
+            "maxParcels": 1,
+            "isRatesToPayer": true
+        }
+    },
+    "_billingRuleId": "665530af71ba8f425553811c",
+    "notifications": [
+        {
+            "event": "invoiceCreate",
+            "channel": "email"
+        }
+    ],
+    "cancelOverdue": true,
+    "overduePaymentDays": 100,
+    "mulctAndInterest": {
+        "enable": true,
+        "mulct": {
+            "type": "percentage",
+            "value": 2
+        },
+        "interest": {
+            "type": "percentage",
+            "value": 0.033
+        }
+    },
+    "observation": "Conforme contrato, o percentual de 20% \u00e9 exclusivo para filiados,\n                de modo que, ao pagar o boleto, concorda em ser feito o desconto\n                da mensalidade da AFPEB ou ACEB\ud83d\ude80\ud83d\ude80Referente aos honor\u00e1rios",
+    "integration": {
+        "enable": true
+    }
+}
